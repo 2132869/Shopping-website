@@ -1,21 +1,26 @@
-const express = require('express');
-const router = express.Router();
-const { isLoggedIn } = require('../middleware');
-const User = require('../models/user');
-const Product = require('../models/product');
+const mongoose = require('mongoose');
 
-router.get('/user/myorders',isLoggedIn,async(req, res) => {
-    
-    const userid = req.user._id;
 
-    const user = await User.findById(userid).populate({
-        path: 'orders',
-        populate: {
-            path: 'orderedProducts'
+const orderSchema = new mongoose.Schema({
+    txnid: {
+        type: String,
+    },
+    amount: {
+        type:Number,
+    },
+    productInfo: {
+        type:String  
+    },
+    orderedProducts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'Product'
         }
-    });
+    ]
+}, { timestamps: true });
 
-    res.render('orders/myOrder',{orders:user.orders});
-});
 
-module.exports = router;
+const Order = mongoose.model('Order', orderSchema);
+1
+module.exports = Order;
+
